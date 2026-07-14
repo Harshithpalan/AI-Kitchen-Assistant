@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Kitchen Assistant</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <i class="fas fa-utensils"></i>
+                <h1>AI Kitchen Assistant</h1>
+            </div>
+            <p class="tagline">Snap. Cook. Enjoy.</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tab-nav">
+            <button class="tab-btn active" data-tab="camera">
+                <i class="fas fa-camera"></i>
+                <span>Camera</span>
+            </button>
+            <button class="tab-btn" data-tab="recipes">
+                <i class="fas fa-book-open"></i>
+                <span>Recipes</span>
+            </button>
+            <button class="tab-btn" data-tab="nutrition">
+                <i class="fas fa-chart-pie"></i>
+                <span>Nutrition</span>
+            </button>
+            <button class="tab-btn" data-tab="saved">
+                <i class="fas fa-heart"></i>
+                <span>Saved</span>
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Camera Tab -->
+            <section id="camera" class="tab-content active">
+                <div class="camera-section">
+                    <div class="camera-container">
+                        <video id="video" autoplay playsinline></video>
+                        <canvas id="canvas" style="display: none;"></canvas>
+                        <div id="capturedImage" class="captured-image" style="display: none;">
+                            <img id="capturedImg" src="" alt="Captured">
+                        </div>
+                        <div class="camera-overlay">
+                            <div class="frame-corner top-left"></div>
+                            <div class="frame-corner top-right"></div>
+                            <div class="frame-corner bottom-left"></div>
+                            <div class="frame-corner bottom-right"></div>
+                        </div>
+                        <div id="cameraPlaceholder" class="camera-placeholder">
+                            <i class="fas fa-camera"></i>
+                            <p>Tap to start camera</p>
+                        </div>
+                    </div>
+
+                    <div class="camera-controls">
+                        <button id="startCamera" class="btn btn-secondary">
+                            <i class="fas fa-video"></i>
+                            Start Camera
+                        </button>
+                        <button id="captureBtn" class="btn btn-primary" disabled>
+                            <i class="fas fa-camera"></i>
+                            Capture
+                        </button>
+                        <button id="retakeBtn" class="btn btn-secondary" style="display: none;">
+                            <i class="fas fa-redo"></i>
+                            Retake
+                        </button>
+                        <button id="analyzeBtn" class="btn btn-accent" style="display: none;">
+                            <i class="fas fa-magic"></i>
+                            Analyze
+                        </button>
+                    </div>
+
+                    <!-- Detected Ingredients -->
+                    <div id="ingredientsResult" class="ingredients-result" style="display: none;">
+                        <h3><i class="fas fa-check-circle"></i> Detected Ingredients</h3>
+                        <div id="ingredientsList" class="ingredients-list"></div>
+                        <button id="findRecipes" class="btn btn-primary btn-full">
+                            <i class="fas fa-search"></i>
+                            Find Recipes
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recipes Tab -->
+            <section id="recipes" class="tab-content">
+                <div class="recipes-section">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="recipeSearch" placeholder="Search recipes or ingredients...">
+                    </div>
+
+                    <div class="filter-tags">
+                        <button class="filter-tag active" data-filter="all">All</button>
+                        <button class="filter-tag" data-filter="quick">Quick</button>
+                        <button class="filter-tag" data-filter="healthy">Healthy</button>
+                        <button class="filter-tag" data-filter="vegetarian">Vegetarian</button>
+                        <button class="filter-tag" data-filter="budget">Budget</button>
+                    </div>
+
+                    <div id="recipesGrid" class="recipes-grid"></div>
+                </div>
+            </section>
+
+            <!-- Nutrition Tab -->
+            <section id="nutrition" class="tab-content">
+                <div class="nutrition-section">
+                    <div id="nutritionEmpty" class="empty-state">
+                        <i class="fas fa-chart-pie"></i>
+                        <p>Analyze ingredients first to see nutrition data</p>
+                    </div>
+                    <div id="nutritionContent" style="display: none;">
+                        <div class="nutrition-header">
+                            <h3>Nutritional Analysis</h3>
+                            <p id="servingSize">Per 100g serving</p>
+                        </div>
+                        <div class="macro-cards">
+                            <div class="macro-card calories">
+                                <div class="macro-value" id="totalCalories">0</div>
+                                <div class="macro-label">Calories</div>
+                                <div class="macro-unit">kcal</div>
+                            </div>
+                            <div class="macro-card protein">
+                                <div class="macro-value" id="totalProtein">0</div>
+                                <div class="macro-label">Protein</div>
+                                <div class="macro-unit">g</div>
+                            </div>
+                            <div class="macro-card carbs">
+                                <div class="macro-value" id="totalCarbs">0</div>
+                                <div class="macro-label">Carbs</div>
+                                <div class="macro-unit">g</div>
+                            </div>
+                            <div class="macro-card fat">
+                                <div class="macro-value" id="totalFat">0</div>
+                                <div class="macro-label">Fat</div>
+                                <div class="macro-unit">g</div>
+                            </div>
+                        </div>
+                        <div class="nutrition-breakdown">
+                            <h4>Detailed Breakdown</h4>
+                            <div id="nutritionDetails" class="nutrition-details"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Saved Tab -->
+            <section id="saved" class="tab-content">
+                <div class="saved-section">
+                    <div id="savedEmpty" class="empty-state">
+                        <i class="fas fa-heart"></i>
+                        <p>No saved recipes yet</p>
+                    </div>
+                    <div id="savedList" class="saved-list"></div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Recipe Modal -->
+        <div id="recipeModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <button class="modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div id="modalBody"></div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Analyzing ingredients...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
